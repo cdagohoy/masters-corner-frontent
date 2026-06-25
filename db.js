@@ -110,7 +110,17 @@ export const db = {
     return { ...flattenPmcf(data), master_name: data.profiles?.name || '', rows: rows || [] };
   },
   async createPmcf(form) {
-    const { data: userData } = await supabase.auth.getUser();
+    const { data: userData, error: userErr } = await supabase.auth.getUser();
+    if (userErr || !userData?.user) {
+      throw new Error('Your session has expired. Please log out and log back in, then try again.');
+    }
+    const { data: profileCheck, error: profileErr } = await supabase
+      .from('profiles').select('id, role').eq('id', userData.user.id).maybeSingle();
+    if (profileErr || !profileCheck) {
+      throw new Error(
+        'Your login is not yet linked to a profile in the database. In Supabase, check Table Editor → profiles for a row matching your account, then log out and log back in here.'
+      );
+    }
     const { data, error } = await supabase.from('pmcf').insert({
       teacher_id: form.teacherId,
       category_id: form.categoryId || null,

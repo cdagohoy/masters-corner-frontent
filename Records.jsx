@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { db } from '../db';
-import { printPmcf } from '../printUtil';
+import PrintPreviewModal from './PrintPreviewModal.jsx';
 
 export default function Records() {
   const [pmcfs, setPmcfs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [openId, setOpenId] = useState(null);
+  const [previewPm, setPreviewPm] = useState(null);
 
   useEffect(() => { load(); }, []);
   async function load() {
@@ -19,9 +20,9 @@ export default function Records() {
     await db.deletePmcf(pm.id);
     load();
   }
-  async function doPrint(pm) {
+  async function doPreview(pm) {
     const full = await db.getPmcf(pm.id);
-    printPmcf(full);
+    setPreviewPm(full);
   }
 
   if (openId) return <PmcfEditor id={openId} onBack={() => { setOpenId(null); load(); }} />;
@@ -43,12 +44,13 @@ export default function Records() {
             </div>
             <div className="row-actions">
               <button className="btn small outline" onClick={() => setOpenId(pm.id)}>Open</button>
-              <button className="btn small gold" onClick={() => doPrint(pm)}>Print</button>
+              <button className="btn small gold" onClick={() => doPreview(pm)}>Preview / Print</button>
               <button className="btn small danger" onClick={() => remove(pm)}>Delete</button>
             </div>
           </div>
         </div>
       ))}
+      {previewPm && <PrintPreviewModal pm={previewPm} onClose={() => setPreviewPm(null)} />}
     </div>
   );
 }
@@ -56,6 +58,7 @@ export default function Records() {
 function PmcfEditor({ id, onBack }) {
   const [pm, setPm] = useState(null);
   const [categories, setCategories] = useState([]);
+  const [previewPm, setPreviewPm] = useState(null);
 
   useEffect(() => {
     db.getPmcf(id).then(setPm);
@@ -102,7 +105,7 @@ function PmcfEditor({ id, onBack }) {
         <strong>{pm.teacher_name}</strong>
         <div className="row-actions">
           <button className="btn small outline" onClick={onBack}>← Back to list</button>
-          <button className="btn small gold" onClick={() => printPmcf(pm)}>Print PMCF</button>
+          <button className="btn small gold" onClick={() => setPreviewPm(pm)}>Preview / Print</button>
         </div>
       </div>
       <div className="grid2" style={{ marginBottom: 10 }}>
@@ -139,6 +142,7 @@ function PmcfEditor({ id, onBack }) {
         <button className="btn outline" onClick={saveMeta}>Save</button>
         <button className="btn gold" onClick={toggleFinal}>{pm.status === 'final' ? 'Mark as Draft' : 'Finalize'}</button>
       </div>
+      {previewPm && <PrintPreviewModal pm={previewPm} onClose={() => setPreviewPm(null)} />}
     </div>
   );
 }

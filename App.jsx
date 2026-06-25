@@ -84,6 +84,7 @@ export default function App() {
         </div>
         <div className="who">
           <span>{profile.name || profile.email}</span>
+          {isMaster && <span style={{ fontSize: 10, opacity: .6 }}>DB: {(import.meta.env.VITE_SUPABASE_URL || '').replace('https://', '').split('.')[0]}</span>}
           <button onClick={handleLogout}>Log out</button>
         </div>
       </div>

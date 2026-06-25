@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { db } from '../db';
-import { printPmcf } from '../printUtil';
+import PrintPreviewModal from './PrintPreviewModal.jsx';
 
 export default function MyRecords({ profile }) {
   const [pmcfs, setPmcfs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [previewPm, setPreviewPm] = useState(null);
 
   useEffect(() => { load(); }, []);
   async function load() {
@@ -12,9 +13,9 @@ export default function MyRecords({ profile }) {
     try { setPmcfs(await db.getPmcfs()); } catch (e) {}
     setLoading(false);
   }
-  async function doPrint(pm) {
+  async function doPreview(pm) {
     const full = await db.getPmcf(pm.id);
-    printPmcf(full);
+    setPreviewPm(full);
   }
 
   return (
@@ -24,13 +25,14 @@ export default function MyRecords({ profile }) {
       {loading && <div className="empty">Loading…</div>}
       {!loading && pmcfs.length === 0 && <div className="empty">No PMCF entries yet.</div>}
       {!loading && pmcfs.map(pm => (
-        <RecordCard key={pm.id} pm={pm} onPrint={() => doPrint(pm)} />
+        <RecordCard key={pm.id} pm={pm} onPreview={() => doPreview(pm)} />
       ))}
+      {previewPm && <PrintPreviewModal pm={previewPm} onClose={() => setPreviewPm(null)} />}
     </div>
   );
 }
 
-function RecordCard({ pm, onPrint }) {
+function RecordCard({ pm, onPreview }) {
   const [expanded, setExpanded] = useState(false);
   const [full, setFull] = useState(null);
 
@@ -52,7 +54,7 @@ function RecordCard({ pm, onPrint }) {
         </div>
         <div className="row-actions">
           <button className="btn small outline" onClick={toggle}>{expanded ? 'Hide' : 'View'}</button>
-          <button className="btn small gold" onClick={onPrint}>Print</button>
+          <button className="btn small gold" onClick={onPreview}>Preview / Print</button>
         </div>
       </div>
       {expanded && full && (
