@@ -1,21 +1,26 @@
 import React, { useEffect, useState } from 'react';
-import { db } from './db';
+import { db } from '../db';
 
 export default function Team() {
   const [profiles, setProfiles] = useState([]);
   const [teachers, setTeachers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
   const [editingId, setEditingId] = useState(null);
   const [editForm, setEditForm] = useState({});
 
   useEffect(() => { load(); }, []);
   async function load() {
     setLoading(true);
+    setLoadError('');
     try {
       const [p, t] = await Promise.all([db.getTeamProfiles(), db.getTeachers()]);
       setProfiles(p);
       setTeachers(t);
-    } catch (e) {}
+    } catch (e) {
+      console.error('Team Access load error:', e);
+      setLoadError(e.message || 'Could not load team data.');
+    }
     setLoading(false);
   }
 
@@ -39,6 +44,7 @@ export default function Team() {
       </div>
 
       <div className="card">
+        {loadError && <div className="banner" style={{ background: '#f5e7e6', color: 'var(--danger)' }}>Could not load team data: {loadError}</div>}
         {loading && <div className="empty">Loading…</div>}
         {!loading && profiles.length === 0 && <div className="empty">No logins yet.</div>}
         {!loading && profiles.map(p => (
