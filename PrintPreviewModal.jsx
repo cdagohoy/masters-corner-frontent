@@ -1,5 +1,5 @@
 import React from 'react';
-import { buildPmcfHtml } from '../printUtil';
+import { buildPmcfHtml } from './printUtil';
 
 export default function PrintPreviewModal({ pm, onClose }) {
   if (!pm) return null;

@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from './supabaseClient';
 import { db } from './db';
-import Login from './pages/Login.jsx';
-import Teachers from './pages/Teachers.jsx';
-import Categories from './pages/Categories.jsx';
-import Schedule from './pages/Schedule.jsx';
-import Records from './pages/Records.jsx';
-import Team from './pages/Team.jsx';
-import ChatMaster from './pages/ChatMaster.jsx';
-import ChatTeacher from './pages/ChatTeacher.jsx';
-import MyRecords from './pages/MyRecords.jsx';
-import Overview from './pages/Overview.jsx';
-import PmcfReminders from './pages/PmcfReminders.jsx';
+import Login from './Login.jsx';
+import Teachers from './Teachers.jsx';
+import Categories from './Categories.jsx';
+import Schedule from './Schedule.jsx';
+import Records from './Records.jsx';
+import Team from './Team.jsx';
+import ChatMaster from './ChatMaster.jsx';
+import ChatTeacher from './ChatTeacher.jsx';
+import MyRecords from './MyRecords.jsx';
+import Overview from './Overview.jsx';
+import PmcfReminders from './PmcfReminders.jsx';
 
 export const SCHOOL = "Maria Cristina P. Belcar Agricultural High School";
 export const DEPT = "Related Subjects Department - JHS";

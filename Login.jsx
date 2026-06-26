@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { db } from '../db';
-import { supabase } from '../supabaseClient';
-import { SCHOOL, DEPT } from '../App.jsx';
+import { db } from './db';
+import { supabase } from './supabaseClient';
+import { SCHOOL, DEPT } from './App.jsx';
 
 export default function Login({ onLoggedIn }) {
   const [email, setEmail] = useState('');

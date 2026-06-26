@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { db } from '../db';
+import { db } from './db';
 import PrintPreviewModal from './PrintPreviewModal.jsx';
 
 export default function Overview() {

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { db } from '../db';
+import { db } from './db';
 
 export default function Categories() {
   const [categories, setCategories] = useState([]);
