@@ -10,6 +10,8 @@ import Team from './pages/Team.jsx';
 import ChatMaster from './pages/ChatMaster.jsx';
 import ChatTeacher from './pages/ChatTeacher.jsx';
 import MyRecords from './pages/MyRecords.jsx';
+import Overview from './pages/Overview.jsx';
+import PmcfReminders from './pages/PmcfReminders.jsx';
 
 export const SCHOOL = "Maria Cristina P. Belcar Agricultural High School";
 export const DEPT = "Related Subjects Department - JHS";
@@ -36,7 +38,7 @@ export default function App() {
       if (!session) { setProfile(null); return; }
       const p = await db.getMyProfile();
       setProfile(p);
-      if (p) setTab(p.role === 'master' ? 'teachers' : 'mychat');
+      if (p) setTab(p.role === 'master' ? 'teachers' : p.role === 'principal' ? 'overview' : 'mychat');
     } catch (e) {
       setProfile(null);
     } finally {
@@ -57,6 +59,7 @@ export default function App() {
   }
 
   const isMaster = profile.role === 'master';
+  const isPrincipal = profile.role === 'principal';
   const needsSetup = profile.role === 'teacher' && !profile.teacher_id;
 
   const masterTabs = [
@@ -71,6 +74,11 @@ export default function App() {
     ['myrecords', 'My PMCF Records'],
     ['mychat', 'Message Master Teacher'],
   ];
+  const principalTabs = [
+    ['overview', 'Team Overview'],
+  ];
+
+  const activeTabs = isMaster ? masterTabs : isPrincipal ? principalTabs : teacherTabs;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
@@ -90,13 +98,14 @@ export default function App() {
       </div>
       <div className="layout">
         <div className="tabs">
-          {(isMaster ? masterTabs : teacherTabs).map(([key, label]) => (
+          {activeTabs.map(([key, label]) => (
             <div key={key} className={`tab ${tab === key ? 'active' : ''}`} onClick={() => setTab(key)}>
               {label}
             </div>
           ))}
         </div>
         <div className="content">
+          {(isMaster || (!isPrincipal && !needsSetup)) && <PmcfReminders isMaster={isMaster} />}
           {needsSetup && (
             <div className="banner">
               Your account is logged in but not yet linked to your teacher profile. Ask your Master Teacher to finish setting you up under Team Access.
@@ -108,8 +117,9 @@ export default function App() {
           {isMaster && tab === 'categories' && <Categories />}
           {isMaster && tab === 'chat' && <ChatMaster profile={profile} />}
           {isMaster && tab === 'team' && <Team />}
-          {!isMaster && !needsSetup && tab === 'myrecords' && <MyRecords profile={profile} />}
-          {!isMaster && !needsSetup && tab === 'mychat' && <ChatTeacher profile={profile} />}
+          {isPrincipal && tab === 'overview' && <Overview />}
+          {!isMaster && !isPrincipal && !needsSetup && tab === 'myrecords' && <MyRecords profile={profile} />}
+          {!isMaster && !isPrincipal && !needsSetup && tab === 'mychat' && <ChatTeacher profile={profile} />}
         </div>
       </div>
       <div className="printable" id="printable"></div>

@@ -50,6 +50,7 @@ export default function Team() {
                   <select value={editForm.role} onChange={e => setEditForm({ ...editForm, role: e.target.value })}>
                     <option value="teacher">Teacher</option>
                     <option value="master">Master Teacher</option>
+                    <option value="principal">Principal (read-only, all teams)</option>
                   </select>
                 </div>
                 <select value={editForm.teacherId} onChange={e => setEditForm({ ...editForm, teacherId: e.target.value })} style={{ marginBottom: 8 }}>

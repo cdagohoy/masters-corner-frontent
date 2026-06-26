@@ -2,6 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { db } from '../db';
 import PrintPreviewModal from './PrintPreviewModal.jsx';
 
+function formatTime(t) {
+  if (!t) return '';
+  const [h, m] = t.split(':');
+  const hour = parseInt(h, 10);
+  const ampm = hour >= 12 ? 'PM' : 'AM';
+  const h12 = hour % 12 === 0 ? 12 : hour % 12;
+  return `${h12}:${m} ${ampm}`;
+}
+
 export default function MyRecords({ profile }) {
   const [pmcfs, setPmcfs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -49,6 +58,7 @@ function RecordCard({ pm, onPreview }) {
       <div className="toolbar">
         <div>
           <span className="pill">{pm.observation_date ? pm.observation_date.slice(0, 10) : '—'}</span>{' '}
+          {pm.observation_time && <span className="pill">{formatTime(pm.observation_time)}</span>}{' '}
           <span className="pill">{pm.grade} {pm.section}</span>{' '}
           <span className="pill gold">{pm.status}</span>
         </div>

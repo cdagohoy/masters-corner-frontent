@@ -27,14 +27,23 @@ export const db = {
   },
 
   // ---------- TEACHERS ----------
-  async getTeachers() {
-    const { data, error } = await supabase.from('teachers').select('*').order('name', { ascending: true });
+  async getTeachers(ownerId) {
+    let q = supabase.from('teachers').select('*').order('name', { ascending: true });
+    if (ownerId) q = q.eq('owner_id', ownerId);
+    const { data, error } = await q;
+    if (error) err(error);
+    return data;
+  },
+  async getMasters() {
+    const { data, error } = await supabase.from('profiles').select('id, name, email').eq('role', 'master').order('name', { ascending: true });
     if (error) err(error);
     return data;
   },
   async addTeacher(t) {
+    const { data: userData } = await supabase.auth.getUser();
     const { data, error } = await supabase.from('teachers').insert({
       name: t.name, position: t.position || '', subjects: t.subjects || '', notes: t.notes || '',
+      owner_id: userData.user.id,
     }).select().single();
     if (error) err(error);
     return data;
@@ -73,7 +82,8 @@ export const db = {
     return data;
   },
   async addCategory(text) {
-    const { data, error } = await supabase.from('categories').insert({ text }).select().single();
+    const { data: userData } = await supabase.auth.getUser();
+    const { data, error } = await supabase.from('categories').insert({ text, owner_id: userData.user.id }).select().single();
     if (error) err(error);
     return data;
   },
@@ -89,13 +99,13 @@ export const db = {
   },
 
   // ---------- PMCF ----------
-  async getPmcfs() {
-    const { data, error } = await supabase
-      .from('pmcf')
-      .select('*, teachers(name), categories(text)')
-      .order('created_at', { ascending: false });
+  async getPmcfs(ownerId) {
+    let q = supabase.from('pmcf').select('*, teachers(name, owner_id), categories(text)').order('created_at', { ascending: false });
+    const { data, error } = await q;
     if (error) err(error);
-    return (data || []).map(flattenPmcf);
+    let rows = (data || []).map(flattenPmcf);
+    if (ownerId) rows = rows.filter(r => r.teachers?.owner_id === ownerId);
+    return rows;
   },
   async getPmcf(id) {
     const { data, error } = await supabase
