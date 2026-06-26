@@ -63,7 +63,7 @@ export const db = {
 
   // ---------- TEAM / PROFILES ----------
   async getTeamProfiles() {
-    const { data, error } = await supabase.from('profiles').select('*, teachers(name)').order('created_at', { ascending: true });
+    const { data, error } = await supabase.from('profiles').select('*, teachers!profiles_teacher_id_fkey(name)').order('created_at', { ascending: true });
     if (error) err(error);
     return data;
   },
