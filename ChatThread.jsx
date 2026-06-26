@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { db } from '../db';
+import { db } from './db';
 
 export default function ChatThread({ teacherId, myName }) {
   const [messages, setMessages] = useState([]);

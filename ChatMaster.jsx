@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { db } from '../db';
+import { db } from './db';
 import ChatThread from './ChatThread.jsx';
 
 export default function ChatMaster({ profile }) {

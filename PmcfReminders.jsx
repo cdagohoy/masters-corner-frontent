@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { db } from '../db';
+import { db } from './db';
 
 function formatTime(t) {
   if (!t) return '';
